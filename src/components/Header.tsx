@@ -4,7 +4,7 @@ import { logoutUser } from "@/actions/auth";
 import { User } from "@prisma/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 
 const AnnouncementBar = () => {
   return (
@@ -20,9 +20,10 @@ const AnnouncementBar = () => {
 
 type HeaderProps = {
   user: Omit<User, "passwordHash"> | null;
+  categorySelector: ReactNode;
 };
 
-export default function Header({ user }: HeaderProps) {
+export default function Header({ user, categorySelector }: HeaderProps) {
   const router = useRouter();
 
   const [isOpen, setIsOpen] = useState<boolean>(true);
@@ -81,7 +82,8 @@ export default function Header({ user }: HeaderProps) {
 
               <nav className="hidden md:flex gap-4 lg:gap-6 text-sm font-medium">
                 <Link href="#">Shop</Link>
-                <Link href="#">Latest</Link>
+                <Link href="#">Newest</Link>
+                {categorySelector}
                 <Link href="#">Sale</Link>
               </nav>
             </div>

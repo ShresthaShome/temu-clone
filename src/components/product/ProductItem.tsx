@@ -29,7 +29,7 @@ export default function ProductItem({ product }: { product: Product }) {
         </h3>
 
         <div className="flex flex-col">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 pl-3">
             <span className="text-lg font-bold text-orange-400">
               ${(product.price || 0).toFixed(2)}
             </span>
@@ -38,7 +38,7 @@ export default function ProductItem({ product }: { product: Product }) {
             </span>
           </div>
 
-          <div className="text-sm text-green-500 font-semibold mb-2">
+          <div className="text-sm text-green-500 font-semibold mb-2 pl-2 line-clamp-1">
             🔥{" "}
             {100 +
               Math.abs(

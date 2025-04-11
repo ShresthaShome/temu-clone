@@ -1,9 +1,9 @@
-import { getCurrentSession } from "@/actions/auth";
+// import { getCurrentSession } from "@/actions/auth";
 import ProductGrid from "@/components/product/ProductGrid";
 import SalesCampaignBanner from "@/components/SalesCampaignBanner";
 import { getAllProducts } from "@/sanity/lib/client";
-import { urlFor } from "@/sanity/lib/image";
-import { SanityImageSource } from "@sanity/image-url/lib/types/types";
+// import { urlFor } from "@/sanity/lib/image";
+// import { SanityImageSource } from "@sanity/image-url/lib/types/types";
 
 export default async function Home() {
   // const { user } = await getCurrentSession();
