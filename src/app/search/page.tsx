@@ -1,22 +1,17 @@
 import ProductGrid from "@/components/product/ProductGrid";
 import SalesCampaignBanner from "@/components/SalesCampaignBanner";
-import { Product, ProductCategory } from "@/sanity.types";
-import {
-  getCategoryBySlug,
-  getProductsByCategorySlug,
-} from "@/sanity/lib/client";
+import { searchProducts } from "@/sanity/lib/client";
 
-export default async function CategoryPage({
-  params,
+export default async function SearchPage({
+  searchParams,
 }: {
-  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ query: string }>;
 }) {
-  const { slug } = await params;
+  const { query } = await searchParams;
 
-  const [category, products]: [ProductCategory, Product[]] = await Promise.all([
-    getCategoryBySlug(slug),
-    getProductsByCategorySlug(slug),
-  ]);
+  const products = await searchProducts(query);
+
+  //   if (!products) return <h1>Error</h1>;
 
   return (
     <div>
@@ -24,14 +19,10 @@ export default async function CategoryPage({
 
       <div className="bg-red-50 p-4">
         <div className="container mx-auto text-center">
-          <h1 className="text-xl md:text-3xl font-bold text-red-600 mb-2">
-            {category?.title ? (
-              <>
-                {category.title}
-                <span className="uppercase"> - Up to 90% off! 🔥</span>
-              </>
-            ) : (
-              <>&#10077;{slug}&#10078;</>
+          <h1 className="text-2xl md:text-3xl font-bold text-red-600 mb-2 ">
+            Search Results for &#10077;{query}&#10078;
+            {products.length > 0 && (
+              <span className="uppercase"> - Up to 90% off! 🔥</span>
             )}
           </h1>
 
@@ -39,9 +30,9 @@ export default async function CategoryPage({
             ⚡️ Flash sale ending soon! ⏰ Limited time only
           </p>
 
-          {category?.description && (
-            <p className="text-gray-600 text-xs mt-2">{category.description}</p>
-          )}
+          <p className="text-gray-600 text-xs mt-2">
+            Discover amazing deals matching your search
+          </p>
         </div>
       </div>
 
@@ -75,7 +66,7 @@ export default async function CategoryPage({
             </p>
           ) : (
             <p className="text-sm text-gray-500">
-              😔 Sorry! No Deal Available for &#10077;{slug}&#10078;
+              😔 Sorry! No Deal Available for &#10077;{query}&#10078;
             </p>
           )}
         </div>

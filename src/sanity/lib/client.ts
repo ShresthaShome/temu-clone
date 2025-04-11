@@ -34,3 +34,18 @@ export const getProductsByCategorySlug = async (slug: string) => {
   const products = await sanityFetch({ query: query, params: { slug } });
   return products.data as Product[];
 };
+
+export const searchProducts = async (searchQuery: string) => {
+  const query = `*[_type == "product" && (
+    lower(title) match lower("*" + $searchQuery + "*") ||
+    lower(description) match lower("*" + $searchQuery + "*") ||
+    lower(category->title) match lower("*" + $searchQuery + "*") ||
+    lower(category->slug.current) match lower("*" + $searchQuery + "*")
+  )]`;
+
+  const products = await sanityFetch({
+    query: query,
+    params: { searchQuery },
+  });
+  return products.data as Product[];
+};
