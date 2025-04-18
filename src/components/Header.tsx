@@ -6,6 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useState } from "react";
 import HeaderSearchBar from "./HeaderSearchBar";
+import { useCartStore } from "@/stores/cart-stores";
+import { useShallow } from "zustand/shallow";
 
 const AnnouncementBar = () => {
   return (
@@ -29,6 +31,13 @@ export default function Header({ user, categorySelector }: HeaderProps) {
 
   const [isOpen, setIsOpen] = useState<boolean>(true);
   const [prevScrollY, setPrevScrollY] = useState<number>(0);
+
+  const { open, getTotalItems } = useCartStore(
+    useShallow((state) => ({
+      open: state.open,
+      getTotalItems: state.getTotalItems,
+    }))
+  );
 
   useEffect(() => {
     const handleScroll = () => {
@@ -89,7 +98,7 @@ export default function Header({ user, categorySelector }: HeaderProps) {
               </nav>
             </div>
 
-            <Link href="#" className="absolute left-1/2 -translate-x-1/2">
+            <Link href="/" className="absolute left-1/2 -translate-x-1/2">
               <span className="text-xl font-bold sm:text-2xl tracking-tight">
                 DEAL
               </span>
@@ -132,7 +141,10 @@ export default function Header({ user, categorySelector }: HeaderProps) {
                 </>
               )}
 
-              <button className="text-gray-700 hover:text-gray-900 relative">
+              <button
+                onClick={open}
+                className="text-gray-700 hover:text-gray-900 relative"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5 sm:h-6 sm:w-6"
@@ -149,7 +161,7 @@ export default function Header({ user, categorySelector }: HeaderProps) {
                 </svg>
 
                 <span className="absolute -top-1 -right-1 bg-black text-white text-[10px] sm:text-sm w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full flex items-center justify-center">
-                  0
+                  {getTotalItems()}
                 </span>
               </button>
             </div>

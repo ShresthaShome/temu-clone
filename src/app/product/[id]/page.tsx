@@ -15,7 +15,7 @@ export default async function ProductPage({
   const { id } = await params;
   const product = await getProductById(id);
 
-  if (!product.price) return <div>Product not found</div>;
+  if (!product?.price) return <div>Product not found</div>;
 
   return (
     <div className="bg-gray-50">
@@ -102,7 +102,7 @@ export default async function ProductPage({
                 <Image
                   fill
                   priority
-                  className="object-cover hover:scale-105 transition-transform duration-300"
+                  className="object-cover hover:scale-105 transition-transform duration-300 cursor-zoom-in"
                   alt={product.title ?? "Product Image"}
                   src={urlFor(product.image).url()}
                 />
@@ -181,7 +181,7 @@ export default async function ProductPage({
               </div>
             </div>
 
-            <AddToCartButton />
+            <AddToCartButton product={product} />
 
             <div className="flex flex-col gap-3 mt-6 text-sm bg-white p-4 rounded-xl shadow-sm border border-gray-100">
               <div className="flex items-center gap-3 text-gray-700">
