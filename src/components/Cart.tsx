@@ -1,15 +1,20 @@
 "use client";
 
+import { createCheckoutSession } from "@/actions/stripe-actions";
 import { formatPrice } from "@/lib/utils";
 import { useCartStore } from "@/stores/cart-stores";
-import { LucideOctagonX, ShoppingCart, X } from "lucide-react";
+import { Loader, ShoppingCart, Trash2, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useShallow } from "zustand/shallow";
+import { Tooltip } from "@heroui/tooltip";
+
+const freeShippingAmmount = 50;
 
 export default function Cart() {
   const {
+    cartId,
     close,
     isOpen,
     syncWithUser,
@@ -21,6 +26,7 @@ export default function Cart() {
     getTotalPrice,
   } = useCartStore(
     useShallow((state) => ({
+      cartId: state.cartId,
       close: state.close,
       isOpen: state.isOpen,
       syncWithUser: state.syncWithUser,
@@ -33,8 +39,6 @@ export default function Cart() {
     }))
   );
 
-  const freeShippingAmmount = 50;
-
   useEffect(() => {
     const initCart = async () => {
       await useCartStore.persist.rehydrate();
@@ -44,6 +48,16 @@ export default function Cart() {
 
     initCart();
   }, []);
+
+  const [loadingProceed, setLoadingProceed] = useState<boolean>(false);
+
+  const handleProceedToCheckout = async () => {
+    if (!cartId || loadingProceed) return;
+    setLoadingProceed(true);
+    const checkoutUrl = await createCheckoutSession(cartId);
+    window.location.href = checkoutUrl;
+    setLoadingProceed(false);
+  };
 
   const totalPrice = getTotalPrice();
 
@@ -127,34 +141,65 @@ export default function Cart() {
                         {formatPrice(item.price)}
                       </div>
 
-                      <div className="flex items-center gap-4 mt-2">
-                        <select
-                          name=""
-                          id=""
-                          value={item.quantity}
-                          onChange={(e) =>
-                            updadeQuantity(
-                              item.sanityProductId!,
-                              parseInt(e.target.value)
-                            )
-                          }
-                          className="border rounded-md px-2 py-1 text-sm bg-white"
+                      <div className="flex items-center gap-4 mt-2 op">
+                        <Tooltip
+                          color="default"
+                          placement="right-end"
+                          content="Select Quantity"
+                          classNames={{
+                            base: ["before:bg-black"],
+                            content: [
+                              "bg-black text-white",
+                              "py-1 px-2 rounded-full text-sm opacity-65",
+                            ],
+                          }}
+                          closeDelay={100}
+                          showArrow
                         >
-                          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                            <option
-                              key={`itm-${item.id}-qty-${num}`}
-                              value={num}
-                            >
-                              {num}
-                            </option>
-                          ))}
-                        </select>
-                        <button
-                          onClick={() => removeItem(item.sanityProductId!)}
-                          className="text-red-500 text-sm hover:text-red-600"
+                          <select
+                            name=""
+                            id=""
+                            value={item.quantity}
+                            onChange={(e) =>
+                              updadeQuantity(
+                                item.sanityProductId!,
+                                parseInt(e.target.value)
+                              )
+                            }
+                            className="border rounded-md px-2 py-1 text-sm bg-white transition-colors cursor-pointer hover:bg-gray-100 focus:hover:bg-white"
+                          >
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                              <option
+                                className="bg-white hover:bg-gray-200 transition-colors hover:cursor-pointer"
+                                key={`itm-${item.id}-qty-${num}`}
+                                value={num}
+                              >
+                                {num}
+                              </option>
+                            ))}
+                          </select>
+                        </Tooltip>
+                        <Tooltip
+                          color="danger"
+                          placement="right-end"
+                          content="Remove Item"
+                          classNames={{
+                            base: ["before:bg-red-500"],
+                            content: [
+                              "bg-red-500 text-white",
+                              "py-1 px-2 rounded-full text-sm opacity-65",
+                            ],
+                          }}
+                          closeDelay={100}
+                          showArrow
                         >
-                          <LucideOctagonX className="w-6 h-6" />
-                        </button>
+                          <button
+                            onClick={() => removeItem(item.sanityProductId!)}
+                            className="text-red-500 rounded-full hover:bg-gray-200 hover:text-red-600 cursor-pointer p-2 transition-colors"
+                          >
+                            <Trash2 className="w-6 h-6" />
+                          </button>
+                        </Tooltip>
                       </div>
                     </div>
                   </div>
@@ -220,8 +265,19 @@ export default function Cart() {
                     </span>
                   </div>
 
-                  <button className="w-full bg-black text-white py-4 rounded-full font-bold hover:bg-gray-900 transition-colors flex items-center justify-center cursor-pointer">
-                    Proceed to Checkout
+                  <button
+                    onClick={handleProceedToCheckout}
+                    disabled={loadingProceed}
+                    className="w-full bg-black text-white py-4 rounded-full font-bold hover:bg-gray-900 transition-colors flex items-center justify-center cursor-pointer"
+                  >
+                    {loadingProceed ? (
+                      <div className="flex items-center gap-1">
+                        Navigating to Checkout...
+                        <Loader className="animate-spin w-5 h-5" />
+                      </div>
+                    ) : (
+                      "Proceed to Checkout"
+                    )}
                   </button>
 
                   <div className="mt-4 space-y-2">
