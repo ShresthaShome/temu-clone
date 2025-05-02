@@ -2,7 +2,10 @@
 
 import { createCheckoutSession } from "@/actions/stripe-actions";
 import { formatPrice } from "@/lib/utils";
-import { useCartStore } from "@/stores/cart-stores";
+import {
+  type CartItem as CartItemType,
+  useCartStore,
+} from "@/stores/cart-stores";
 import { Loader, ShoppingCart, Trash2, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,6 +14,110 @@ import { useShallow } from "zustand/shallow";
 import { Tooltip } from "@heroui/tooltip";
 
 const freeShippingAmmount = 50;
+
+const CartItem = ({ item }: { item: CartItemType }) => {
+  const { updadeQuantity, removeItem } = useCartStore(
+    useShallow((state) => ({
+      updadeQuantity: state.updateQuantity,
+      removeItem: state.removeItem,
+    }))
+  );
+
+  const isFree = item.price === 0;
+
+  return (
+    <div className="flex gap-4 hover:bg-gray-50 p-4">
+      <div className="relative w-20 h-20 rounded-lg overflow-hidden shrink-0 border">
+        <Image
+          src={item.image}
+          alt={item.title}
+          fill
+          className="object-cover"
+        />
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <h3 className="font-medium text-gray-900 truncate">{item.title}</h3>
+
+        <div className="text-sm text-gray-500 mt-1">
+          {isFree ? (
+            <span className="text-emerald-600 font-medium uppercase">Free</span>
+          ) : (
+            formatPrice(item.price)
+          )}
+        </div>
+
+        <div className="flex items-center gap-4 mt-2 op">
+          {isFree ? (
+            <span className="text-sm text-emerald-600 font-medium">
+              Prize Item
+            </span>
+          ) : (
+            <Tooltip
+              color="default"
+              placement="right-end"
+              content="Select Quantity"
+              classNames={{
+                base: ["before:bg-black"],
+                content: [
+                  "bg-black text-white",
+                  "py-1 px-2 rounded-full text-sm opacity-65 select-none",
+                ],
+              }}
+              closeDelay={100}
+              showArrow
+            >
+              <select
+                name=""
+                id=""
+                value={item.quantity}
+                onChange={(e) =>
+                  updadeQuantity(
+                    item.sanityProductId!,
+                    parseInt(e.target.value),
+                    item.title
+                  )
+                }
+                className="border rounded-md px-2 py-1 text-sm bg-white transition-colors cursor-pointer hover:bg-gray-100 focus:hover:bg-white"
+              >
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
+                  <option
+                    className="bg-white hover:bg-gray-200 transition-colors hover:cursor-pointer"
+                    key={`itm-${item.id}-qty-${num}`}
+                    value={num}
+                  >
+                    {num}
+                  </option>
+                ))}
+              </select>
+            </Tooltip>
+          )}
+          <Tooltip
+            color="danger"
+            placement="right-end"
+            content="Remove Item"
+            classNames={{
+              base: ["before:bg-red-500"],
+              content: [
+                "bg-red-500 text-white",
+                "py-1 px-2 rounded-full text-sm opacity-65 select-none",
+              ],
+            }}
+            closeDelay={100}
+            showArrow
+          >
+            <button
+              onClick={() => removeItem(item.sanityProductId!, item.title)}
+              className="text-red-500 rounded-full hover:bg-gray-200 hover:text-red-600 cursor-pointer p-2 transition-colors"
+            >
+              <Trash2 className="w-6 h-6" />
+            </button>
+          </Tooltip>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function Cart() {
   const {
@@ -21,8 +128,6 @@ export default function Cart() {
     setLoaded,
     getTotalItems,
     items,
-    updadeQuantity,
-    removeItem,
     getTotalPrice,
   } = useCartStore(
     useShallow((state) => ({
@@ -33,8 +138,6 @@ export default function Cart() {
       setLoaded: state.setLoaded,
       getTotalItems: state.getTotalItems,
       items: state.items,
-      updadeQuantity: state.updateQuantity,
-      removeItem: state.removeItem,
       getTotalPrice: state.getTotalPrice,
     }))
   );
@@ -119,90 +222,7 @@ export default function Cart() {
             ) : (
               <div className="divide-y">
                 {items.map((item) => (
-                  <div
-                    className="flex gap-4 hover:bg-gray-50 p-4"
-                    key={`cart-item-${item.id}`}
-                  >
-                    <div className="relative w-20 h-20 rounded-lg overflow-hidden shrink-0 border">
-                      <Image
-                        src={item.image}
-                        alt={item.title}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-gray-900 truncate">
-                        {item.title}
-                      </h3>
-
-                      <div className="text-sm text-gray-500 mt-1">
-                        {formatPrice(item.price)}
-                      </div>
-
-                      <div className="flex items-center gap-4 mt-2 op">
-                        <Tooltip
-                          color="default"
-                          placement="right-end"
-                          content="Select Quantity"
-                          classNames={{
-                            base: ["before:bg-black"],
-                            content: [
-                              "bg-black text-white",
-                              "py-1 px-2 rounded-full text-sm opacity-65",
-                            ],
-                          }}
-                          closeDelay={100}
-                          showArrow
-                        >
-                          <select
-                            name=""
-                            id=""
-                            value={item.quantity}
-                            onChange={(e) =>
-                              updadeQuantity(
-                                item.sanityProductId!,
-                                parseInt(e.target.value)
-                              )
-                            }
-                            className="border rounded-md px-2 py-1 text-sm bg-white transition-colors cursor-pointer hover:bg-gray-100 focus:hover:bg-white"
-                          >
-                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
-                              <option
-                                className="bg-white hover:bg-gray-200 transition-colors hover:cursor-pointer"
-                                key={`itm-${item.id}-qty-${num}`}
-                                value={num}
-                              >
-                                {num}
-                              </option>
-                            ))}
-                          </select>
-                        </Tooltip>
-                        <Tooltip
-                          color="danger"
-                          placement="right-end"
-                          content="Remove Item"
-                          classNames={{
-                            base: ["before:bg-red-500"],
-                            content: [
-                              "bg-red-500 text-white",
-                              "py-1 px-2 rounded-full text-sm opacity-65",
-                            ],
-                          }}
-                          closeDelay={100}
-                          showArrow
-                        >
-                          <button
-                            onClick={() => removeItem(item.sanityProductId!)}
-                            className="text-red-500 rounded-full hover:bg-gray-200 hover:text-red-600 cursor-pointer p-2 transition-colors"
-                          >
-                            <Trash2 className="w-6 h-6" />
-                          </button>
-                        </Tooltip>
-                      </div>
-                    </div>
-                  </div>
+                  <CartItem key={`cart-item-${item.id}`} item={item} />
                 ))}
               </div>
             )}

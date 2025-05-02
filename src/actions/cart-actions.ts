@@ -2,6 +2,8 @@
 
 import { getCurrentSession } from "@/actions/auth";
 import prisma from "@/lib/prisma";
+import { type Product } from "@/sanity.types";
+import { urlFor } from "@/sanity/lib/image";
 import { revalidatePath } from "next/cache";
 
 export const createCart = async () => {
@@ -72,7 +74,8 @@ export const updateCartItem = async (
   const cart = await getOrCreateCart(cartId);
 
   const existingItem = cart.items.find(
-    (item) => item.sanityProductId === sanityProductId
+    (item) =>
+      item.sanityProductId === sanityProductId && item.title === data.title
   );
 
   if (existingItem) {
@@ -83,6 +86,13 @@ export const updateCartItem = async (
         },
       });
     } else if (data.quantity && data.quantity > 0) {
+      if (
+        existingItem?.title.startsWith("🎁") &&
+        existingItem.title.endsWith("(Won)")
+      ) {
+        return cart;
+      }
+
       await prisma.cartLineItem.update({
         where: {
           id: existingItem.id,
@@ -203,4 +213,27 @@ export const syncedCartWithUser = async (cartId: string | null) => {
 
   revalidatePath("/");
   return getOrCreateCart(existingUserCart.id);
+};
+
+export const addWinningItemToCart = async (
+  cartId: string,
+  product: Product
+) => {
+  const cart = await getOrCreateCart(cartId);
+
+  const existingItem = cart.items.find(
+    (item) =>
+      item.sanityProductId === product._id &&
+      item.title === `🎁 ${product.title} (Won)`
+  );
+
+  if (!existingItem) {
+    const updatedCart = await updateCartItem(cart.id, product._id, {
+      title: `🎁 ${product.title} (Won)`,
+      price: 0,
+      quantity: 1,
+      image: product.image ? urlFor(product.image).url() : "",
+    });
+    return updatedCart;
+  } else return cart;
 };

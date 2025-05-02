@@ -22,8 +22,12 @@ type CartStore = {
   cartId: string | null;
   setStore: (store: Partial<CartStore>) => void;
   addItem: (item: CartItem) => Promise<void>;
-  removeItem: (id: string) => Promise<void>;
-  updateQuantity: (id: string, quantity: number) => Promise<void>;
+  removeItem: (id: string, title: string) => Promise<void>;
+  updateQuantity: (
+    id: string,
+    quantity: number,
+    title: string
+  ) => Promise<void>;
   clearCart: () => void;
   open: () => void;
   close: () => void;
@@ -48,7 +52,9 @@ export const useCartStore = create<CartStore>()(
 
         if (!cartId) return;
 
-        const isExistingItem = items.find((i) => i.sanityProductId === item.id);
+        const isExistingItem = items.find(
+          (i) => i.sanityProductId === item.id && i.title === item.title
+        );
 
         const updatedCart = await updateCartItem(cartId, item.id, {
           title: item.title,
@@ -60,13 +66,15 @@ export const useCartStore = create<CartStore>()(
         });
 
         set((state) => {
-          const existingItem = state.items.find((i) => i.id === item.id);
+          const existingItem = state.items.find(
+            (i) => i.id === item.id && i.title === item.title
+          );
           if (existingItem) {
             return {
               ...state,
               cartId: updatedCart.id,
               items: state.items.map((i) =>
-                i.id === item.id
+                i.id === item.id && i.title === item.title
                   ? { ...i, quantity: i.quantity + item.quantity }
                   : i
               ),
@@ -81,31 +89,35 @@ export const useCartStore = create<CartStore>()(
         });
       },
 
-      removeItem: async (id) => {
+      removeItem: async (id, title) => {
         const { cartId } = get();
 
         if (!cartId) return;
 
         const updatedCart = await updateCartItem(cartId, id, {
           quantity: 0,
+          title,
         });
 
         set((state) => {
           return {
             ...state,
             cartId: updatedCart.id,
-            items: state.items.filter((item) => item.sanityProductId !== id),
+            items: state.items.filter(
+              (item) => item.sanityProductId !== id && item.title !== title
+            ),
           };
         });
       },
 
-      updateQuantity: async (id, quantity) => {
+      updateQuantity: async (id, quantity, title) => {
         const { cartId } = get();
 
         if (!cartId) return;
 
         const updatedCart = await updateCartItem(cartId, id, {
           quantity,
+          title,
         });
 
         set((state) => {
@@ -113,7 +125,9 @@ export const useCartStore = create<CartStore>()(
             ...state,
             cartId: updatedCart.id,
             items: state.items.map((item) =>
-              item.sanityProductId === id ? { ...item, quantity } : item
+              item.sanityProductId === id && item.title === title
+                ? { ...item, quantity }
+                : item
             ),
           };
         });
