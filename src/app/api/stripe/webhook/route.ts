@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { umamiTrackCheckoutSuccessEvent } from "@/lib/umami";
 import { createClient } from "next-sanity";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
@@ -57,7 +58,7 @@ export async function POST(req: Request) {
 
         if (!cart) throw new Error("Cart not found");
 
-        await sanityClient.create({
+        const order = await sanityClient.create({
           _type: "order",
           orderNumber: session.id.slice(-8).toUpperCase(),
           orderDate: new Date().toISOString(),
@@ -93,6 +94,18 @@ export async function POST(req: Request) {
           })),
           status: "processing",
         });
+
+        try {
+          umamiTrackCheckoutSuccessEvent({
+            cartId,
+            email: order.customerEmail || "-",
+            orderId: order.orderNumber,
+            orderTotal: order.totalPrice,
+            orderCurrency: "USD",
+          });
+        } catch (e) {
+          console.error("Umami tracking error", e);
+        }
 
         await prisma.cart.delete({
           where: {

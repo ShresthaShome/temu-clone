@@ -6,6 +6,9 @@ import { getCurrentSession } from "@/actions/auth";
 import { SanityLive } from "@/sanity/lib/live";
 import HeaderCategorySelector from "@/components/HeaderCategorySelector";
 import Cart from "@/components/Cart";
+import Script from "next/script";
+import { Suspense } from "react";
+import AnalyticsTracker from "@/components/AnalyticsTracker";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,6 +28,15 @@ export default async function RootLayout({
     <html lang="en">
       <body className={`${inter.className} antialiased bg-white min-h-[125vh]`}>
         <Header user={user} categorySelector={<HeaderCategorySelector />} />
+        <Script
+          src="https://cloud.umami.is/script.js"
+          data-website-id="1ba6356b-607a-4f5a-9234-99930847e7b6"
+          strategy="afterInteractive"
+        />
+
+        <Suspense>
+          <AnalyticsTracker user={user} />
+        </Suspense>
 
         {children}
 

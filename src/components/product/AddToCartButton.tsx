@@ -9,9 +9,10 @@ import { useState } from "react";
 import { useShallow } from "zustand/shallow";
 
 export default function AddToCartButton({ product }: { product: Product }) {
-  const { addItem, open } = useCartStore(
+  const { addItem, open, cartId } = useCartStore(
     useShallow((state) => ({
       addItem: state.addItem,
+      cartId: state.cartId,
       open: state.open,
     }))
   );
@@ -32,6 +33,22 @@ export default function AddToCartButton({ product }: { product: Product }) {
       quantity: 1,
       image: urlFor(product.image).url(),
     });
+
+    try {
+      const anyWindow = window as any;
+
+      if (anyWindow.umami) {
+        await anyWindow.umami.track("add_to_cart", {
+          cartId,
+          productId: product._id,
+          productName: product.title,
+          productPrice: product.price,
+          currency: "USD",
+        });
+      }
+    } catch (e) {
+      console.error("Umami add to cart error", e);
+    }
 
     setLoading(false);
     open();

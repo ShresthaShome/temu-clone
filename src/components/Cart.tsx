@@ -157,8 +157,25 @@ export default function Cart() {
   const handleProceedToCheckout = async () => {
     if (!cartId || loadingProceed) return;
     setLoadingProceed(true);
+
     const checkoutUrl = await createCheckoutSession(cartId);
+
+    try {
+      const anyWindow = window as any;
+
+      if (anyWindow.umami) {
+        await anyWindow.umami.track("proceed_to_checkout", {
+          cartId,
+          totalPrice: getTotalPrice(),
+          currency: "USD",
+        });
+      }
+    } catch (e) {
+      console.error("Umami proceed to checkout error", e);
+    }
+
     window.location.href = checkoutUrl;
+
     setLoadingProceed(false);
   };
 
