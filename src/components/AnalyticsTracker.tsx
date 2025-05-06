@@ -20,6 +20,7 @@ export default function AnalyticsTracker({
     if (!cartId || user) return;
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const anyWindow = window as any;
 
       if (anyWindow.umami) {
@@ -36,6 +37,7 @@ export default function AnalyticsTracker({
     if (!user) return;
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const anyWindow = window as any;
 
       if (anyWindow.umami) {

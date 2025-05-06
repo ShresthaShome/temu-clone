@@ -35,6 +35,7 @@ export default function AddToCartButton({ product }: { product: Product }) {
     });
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const anyWindow = window as any;
 
       if (anyWindow.umami) {
