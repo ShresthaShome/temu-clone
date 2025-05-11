@@ -1,9 +1,10 @@
 {
   "name": "temu-clone",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "notur": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
@@ -22,7 +23,7 @@
     "clsx": "^2.1.1",
     "lucide-react": "^0.487.0",
     "next": "15.2.4",
-    "next-sanity": "^9.9.9",
+    "next-sanity": "^9.11.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "stripe": "^18.0.0",

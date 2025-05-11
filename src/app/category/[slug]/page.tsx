@@ -6,6 +6,20 @@ import {
   getProductsByCategorySlug,
 } from "@/sanity/lib/client";
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  if (!slug) return { title: "Category Error" };
+
+  const category = await getCategoryBySlug(slug);
+  if (!category) return { title: "Category Not Found" };
+
+  return { title: `${category.title || slug} Products` };
+}
+
 export default async function CategoryPage({
   params,
 }: {

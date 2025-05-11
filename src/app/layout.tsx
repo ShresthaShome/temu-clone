@@ -4,16 +4,16 @@ import "./globals.css";
 import Header from "@/components/Header";
 import { getCurrentSession } from "@/actions/auth";
 import { SanityLive } from "@/sanity/lib/live";
-import HeaderCategorySelector from "@/components/HeaderCategorySelector";
 import Cart from "@/components/Cart";
 import Script from "next/script";
 import { Suspense } from "react";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
+import HeaderCategorySelector from "@/components/HeaderCategorySelector";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Temu Clone App",
+  title: { default: "Temu Clone", template: "%s | Temu Clone" },
   description: "Made by Ullas Shome",
 };
 

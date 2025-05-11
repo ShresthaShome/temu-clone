@@ -77,7 +77,7 @@ export default function SignIn({ action }: SignInProps) {
         <button
           type="submit"
           disabled={isPending}
-          className={`w-full bg-rose-600 text-white py-3 rounded-md hover:bg-rose-700 transition-colors font-medium flex items-center justify-center gap-2 uppercase ${
+          className={`w-full bg-rose-600 text-white py-3 rounded-md hover:bg-rose-700 transition-colors font-medium flex items-center justify-center gap-2 uppercase cursor-pointer ${
             isPending ? "opacity-50 cursor-not-allowed" : ""
           }`}
         >

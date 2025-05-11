@@ -1,7 +1,12 @@
 import { getCurrentSession, loginUser, registerUser } from "@/actions/auth";
 import SignUp from "@/components/auth/SignUp";
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+
+export const metadata: Metadata = {
+  title: "Create New Account",
+};
 
 const SignUpSchema = z.object({
   email: z.string().email(),

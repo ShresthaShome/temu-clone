@@ -7,6 +7,20 @@ import { ChevronRight, Home } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  if (!id) return { title: "No Product" };
+
+  const product = await getProductById(id);
+  if (!product) return { title: "Product Not Found" };
+
+  return { title: product.title || "View Product" };
+}
+
 export default async function ProductPage({
   params,
 }: {

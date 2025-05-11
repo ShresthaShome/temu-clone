@@ -42,11 +42,10 @@ export default function ProductItem({ product }: { product: Product }) {
           <div className="text-sm text-green-500 font-semibold mb-2 pl-2 line-clamp-1">
             🔥{" "}
             {100 +
-              Math.abs(
-                (product._id + new Date().toLocaleDateString())
-                  .split("")
-                  .reduce((a, b) => a + b.charCodeAt(0), 0) % 500
-              )}
+              ((product._id + new Date().toLocaleDateString())
+                .split("")
+                .reduce((a, b) => a + b.charCodeAt(0), 0) %
+                500)}
             + sold in last 24h
           </div>
 

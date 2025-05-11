@@ -5,9 +5,11 @@ import { User } from "@prisma/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useState } from "react";
-import HeaderSearchBar from "./HeaderSearchBar";
+import HeaderSearchBar from "@/components/HeaderSearchBar";
 import { useCartStore } from "@/stores/cart-stores";
 import { useShallow } from "zustand/shallow";
+import { UserCircle } from "lucide-react";
+import Nav from "@/components/Nav";
 
 const AnnouncementBar = () => {
   return (
@@ -70,37 +72,16 @@ export default function Header({ user, categorySelector }: HeaderProps) {
       >
         <AnnouncementBar />
 
-        <div className="w-full flex justify-between items-center py-3 sm:py-4 bg-white/80 shadow-sm border-b border-gray-100 backdrop-blur-sm">
+        <div className="w-full flex justify-between items-center py-3 sm:py-4 bg-white/80 shadow-sm border-b border-gray-100 backdrop-blur-sm min-h-[50px]">
           <div className="flex items-center justify-between container mx-auto px-8">
-            <div className="flex flex-1 justify-start items-center gap-4 sm:gap-6">
-              <button className="text-gray-700 hover:text-gray-900 md:hidden">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 sm:h-6 sm:w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
-              </button>
+            <Nav categorySelector={categorySelector} />
 
-              <nav className="hidden md:flex gap-4 lg:gap-6 text-sm font-medium">
-                <Link href="#">Shop</Link>
-                <Link href="#">Newest</Link>
-                {categorySelector}
-                <Link href="#">Sale</Link>
-              </nav>
-            </div>
-
-            <Link href="/" className="absolute left-1/2 -translate-x-1/2">
-              <span className="text-xl font-bold sm:text-2xl tracking-tight">
-                DEAL
+            <Link
+              href="/"
+              className="absolute left-1/2 -translate-x-1/2 -translate-y-[22%]"
+            >
+              <span className="inline-flex items-center justify-center h-12 w-20 text-xl font-bold sm:text-2xl tracking-tight uppercase bg-orange-400 text-white rounded-xl px-2 mt-10 opacity-90">
+                Temu
               </span>
             </Link>
 
@@ -109,9 +90,12 @@ export default function Header({ user, categorySelector }: HeaderProps) {
 
               {user ? (
                 <div className="flex items-center gap-2 sm:gap-4">
-                  <span className="text-xs text-gray-700 hidden md:block">
-                    {user.email}
-                  </span>
+                  <div className="flex flex-row items-center justify-center gap-1">
+                    <UserCircle className="h-6 w-6" />
+                    <span className="text-xs text-gray-700 hidden md:block">
+                      {user.email}
+                    </span>
+                  </div>
                   <Link
                     href="#"
                     className="text-xs sm:text-sm font-medium text-gray-700 hover:text-gray-900"

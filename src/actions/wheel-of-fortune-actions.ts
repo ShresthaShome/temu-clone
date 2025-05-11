@@ -11,9 +11,11 @@ export const wheelOfFortuneSetup = async () => {
     useCdn: true,
   });
 
-  const getRandomProducts = await client.fetch<Product[]>(
-    `*[_type == "product"][0..6]`
-  );
+  const getRandomProducts = (
+    await client.fetch<Product[]>(`*[_type == "product"]`)
+  )
+    .sort(() => 0.5 - Math.random())
+    .slice(0, 6);
 
   const today = new Date();
   const [day, month, year] = [

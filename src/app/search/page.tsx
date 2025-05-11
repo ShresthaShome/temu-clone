@@ -2,6 +2,20 @@ import ProductGrid from "@/components/product/ProductGrid";
 import SalesCampaignBanner from "@/components/SalesCampaignBanner";
 import { searchProducts } from "@/sanity/lib/client";
 
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ query: string }>;
+}) {
+  const { query } = await searchParams;
+  if (!query) return { title: "Error - No Search Query" };
+
+  const product = await searchProducts(query);
+  if (!product) return { title: "No Product Found" };
+
+  return { title: `Searched for "${query}"` };
+}
+
 export default async function SearchPage({
   searchParams,
 }: {

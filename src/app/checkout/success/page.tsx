@@ -1,5 +1,10 @@
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Stripe from "stripe";
+
+export const metadata: Metadata = {
+  title: "Payment Successful",
+};
 
 const getCheckoutSession = async (sessionId: string) => {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {

@@ -1,15 +1,12 @@
-// import { getCurrentSession } from "@/actions/auth";
 import { wheelOfFortuneSetup } from "@/actions/wheel-of-fortune-actions";
-import ProductGrid from "@/components/product/ProductGrid";
 import SalesCampaignBanner from "@/components/SalesCampaignBanner";
 import WheelOfFortune from "@/components/WheelOfFortune";
-import { getAllProducts } from "@/sanity/lib/client";
 
-export default async function Home() {
-  // const { user } = await getCurrentSession();
-
-  const products = await getAllProducts();
-
+export default async function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   const { getRandomProducts, winningIndex } = await wheelOfFortuneSetup();
 
   return (
@@ -19,10 +16,7 @@ export default async function Home() {
         products={getRandomProducts}
         winningIndex={winningIndex}
       />
-
-      <section className="container mx-auto py-8">
-        <ProductGrid products={products} />
-      </section>
+      {children}
     </main>
   );
 }

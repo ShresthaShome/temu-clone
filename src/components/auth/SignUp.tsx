@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import Form from "next/form";
 import { Loader2 } from "lucide-react";
+import { formatTime } from "@/lib/utils";
 
 const initialState = {
   message: "",
@@ -15,8 +16,27 @@ type SignUpProps = {
   ) => Promise<{ message: string } | undefined>;
 };
 
+function getTimeRemaining() {
+  const minute = new Date().getMinutes();
+  const hour = minute < 30 ? new Date().getHours() : new Date().getHours() + 1;
+  const total = new Date().setHours(hour, minute < 30 ? 30 : 0, 0) - Date.now();
+  return { remainingTime: total / 1000, halfNumber: minute > 30 ? 2 : 1 };
+}
+
 export default function SignUp({ action }: SignUpProps) {
   const [state, formAction, isPending] = useActionState(action, initialState);
+
+  const [time, setTime] = useState({ remainingTime: 0, halfNumber: 0 });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTime(getTimeRemaining());
+    }, 1000);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
 
   return (
     <Form
@@ -67,17 +87,33 @@ export default function SignUp({ action }: SignUpProps) {
 
         <div className="text-center">
           <p className="text-xs text-gray-500 mb-2">
-            ⚡ Only 367 welcome bonus packages remaining!
+            ⚡ Only{" "}
+            {10 +
+              Math.ceil(
+                (new Date()
+                  .toLocaleDateString()
+                  .split("")
+                  .reduce((a, b) => a + b.charCodeAt(0), 0) %
+                  400) *
+                  ((24 - new Date().getHours()) / 24)
+              )}{" "}
+            welcome bonus packages remaining!
           </p>
-          <p className="text-xs text-gray-500 mb-2">
-            🕔 Offer expires in: 13:45
-          </p>
+          {time.remainingTime ? (
+            <p className="text-xs text-gray-500 mb-2">
+              🕔 Offer expires in:{" "}
+              {formatTime(Math.floor((time.remainingTime % 3600) / 60))}:
+              {formatTime(Math.floor(time.remainingTime % 60))}
+            </p>
+          ) : (
+            <></>
+          )}
         </div>
 
         <button
           type="submit"
           disabled={isPending}
-          className={`w-full bg-rose-600 text-white py-3 rounded-md hover:bg-rose-700 transition-colors font-medium flex items-center justify-center gap-2 uppercase ${
+          className={`w-full bg-rose-600 text-white py-3 rounded-md hover:bg-rose-700 transition-colors font-medium flex items-center justify-center gap-2 uppercase cursor-pointer ${
             isPending ? "opacity-50 cursor-not-allowed" : ""
           }`}
         >

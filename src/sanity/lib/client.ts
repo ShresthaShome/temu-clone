@@ -17,6 +17,24 @@ export const getAllProducts = async () => {
   return products.data as Product[];
 };
 
+export const getNewestProducts = async () => {
+  const query = `*[_type == "product"] | order(_createdAt desc)`;
+  const products = await sanityFetch({ query: query });
+  return products.data as Product[];
+};
+
+export const getSaleProducts = async () => {
+  const query = `*[_type == "product"] | order(_createdAt asc)`;
+  const products = await sanityFetch({ query: query });
+  return products.data as Product[];
+};
+
+export const getShopProducts = async () => {
+  const query = `*[_type == "product"]`;
+  const products = await sanityFetch({ query: query });
+  return products.data.sort(() => 0.5 - Math.random()) as Product[];
+};
+
 export const getAllCategories = async () => {
   const query = `*[_type == "productCategory"]`;
   const categories = await sanityFetch({ query: query });

@@ -1,7 +1,12 @@
 import { getCurrentSession, loginUser } from "@/actions/auth";
 import SignIn from "@/components/auth/SignIn";
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+
+export const metadata: Metadata = {
+  title: "Sign In",
+};
 
 const SignInSchema = z.object({
   email: z.string().email(),
