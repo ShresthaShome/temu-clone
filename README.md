@@ -1,4 +1,4 @@
-# Temu Clone App v1.0.0
+# Temu Clone App v1.1.0
 
 ## This project is live on: [Temu Clone App Live Link (Click Here)](https://temu-ecom.vercel.app)
 

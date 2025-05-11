@@ -14,7 +14,26 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: { default: "Temu Clone", template: "%s | Temu Clone" },
-  description: "Made by Ullas Shome",
+  description: "Made and Maintained by Ullas Shome",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon-32x32.png",
+    apple: "/apple-touch-icon.png",
+    other: [
+      {
+        rel: "icon",
+        url: "/favicon-16x16.png",
+      },
+      {
+        rel: "icon",
+        url: "/favicon-32x32.png",
+      },
+      {
+        rel: "manifest",
+        url: "/site.webmanifest",
+      },
+    ],
+  },
 };
 
 export default async function RootLayout({
