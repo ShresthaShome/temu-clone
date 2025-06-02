@@ -4,9 +4,22 @@ import { formatTime } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-function getTimeRemaining() {
-  const total = new Date().setHours(20, 0, 0) - Date.now();
-  return total / 1000;
+function getTimeRemaining(): number {
+  const now = new Date();
+  const next8PM = getNext8PM();
+  const timeDifferenceInMilliseconds = next8PM.getTime() - now.getTime();
+  return timeDifferenceInMilliseconds / 1000;
+}
+
+function getNext8PM(): Date {
+  const eightPM = new Date();
+  eightPM.setHours(20, 0, 0, 0);
+
+  if (new Date() >= eightPM) {
+    eightPM.setDate(eightPM.getDate() + 1);
+  }
+
+  return eightPM;
 }
 
 export default function SalesCampaignBanner() {
